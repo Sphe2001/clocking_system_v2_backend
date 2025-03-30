@@ -13,10 +13,9 @@ const Student = sequelize.define("Student", {
     type: DataTypes.STRING,
     unique: true,
   },
-  role_id: {
-    allowNull: false,
-    type: DataTypes.INTEGER,
-    default: 3,
+  role: {
+    type: DataTypes.STRING,
+    default: "student",
   },
   surname: {
     allowNull: false,
@@ -29,6 +28,10 @@ const Student = sequelize.define("Student", {
   contactNo: {
     type: DataTypes.STRING,
   },
+  specialization: {
+    allowNull: false,
+    type: DataTypes.STRING,
+  },
   password: {
     allowNull: false,
     type: DataTypes.STRING,
@@ -36,6 +39,22 @@ const Student = sequelize.define("Student", {
   isVerified: {
     type: DataTypes.BOOLEAN,
     default: false,
+  },
+  forgotPasswordToken:{
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  forgotPasswordTokenExpiry:{
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  verifyToken:{
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  verifyTokenExpiry:{
+    type: DataTypes.STRING,
+    allowNull: true,
   },
 });
 
