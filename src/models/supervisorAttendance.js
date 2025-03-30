@@ -9,7 +9,7 @@ const SupervisorAttendance = sequelize.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    supervisor_id: {
+    staffNo: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

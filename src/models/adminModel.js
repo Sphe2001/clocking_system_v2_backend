@@ -13,10 +13,9 @@ const Admin = sequelize.define("Admin", {
     type: DataTypes.STRING,
     unique: true,
   },
-  role_id: {
-    allowNull: false,
-    type: DataTypes.INTEGER,
-    default: 1,
+  role: {
+    type: DataTypes.STRING,
+    default: "admin",
   },
   surname: {
     allowNull: false,

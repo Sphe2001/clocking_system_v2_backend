@@ -1,11 +1,11 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const sequelize = require("./src/helpers/dbConfig");
-const authRoutes = require("./src/routes/registerUsers");
+const authRoutes = require("./src/routes/auth/authRoutes")
+
 
 const app = express();
 
-//Config dotenv
 dotenv.config();
 
 // Middleware

@@ -13,10 +13,9 @@ const Supervisor = sequelize.define("Supervisor", {
     type: DataTypes.STRING,
     unique: true,
   },
-  role_id: {
-    allowNull: false,
-    type: DataTypes.INTEGER,
-    default: 2,
+  role: {
+    type: DataTypes.STRING,
+    default: "supervisor",
   },
   surname: {
     allowNull: false,
@@ -29,6 +28,10 @@ const Supervisor = sequelize.define("Supervisor", {
   contactNo: {
     type: DataTypes.STRING,
   },
+  specialization: {
+    allowNull: false,
+    type: DataTypes.STRING,
+  },
   password: {
     allowNull: false,
     type: DataTypes.STRING,
@@ -36,6 +39,22 @@ const Supervisor = sequelize.define("Supervisor", {
   isVerified: {
     type: DataTypes.BOOLEAN,
     default: false,
+  },
+  forgotPasswordToken:{
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  forgotPasswordTokenExpiry:{
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  verifyToken:{
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  verifyTokenExpiry:{
+    type: DataTypes.STRING,
+    allowNull: true,
   },
 });
 
