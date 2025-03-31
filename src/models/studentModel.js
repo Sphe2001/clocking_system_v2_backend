@@ -40,22 +40,22 @@ const Student = sequelize.define("Student", {
     type: DataTypes.BOOLEAN,
     default: false,
   },
-  forgotPasswordToken:{
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  forgotPasswordTokenExpiry:{
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  verifyToken:{
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  verifyTokenExpiry:{
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
+  // forgotPasswordToken:{
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  // },
+  // forgotPasswordTokenExpiry:{
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  // },
+  // verifyToken:{
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  // },
+  // verifyTokenExpiry:{
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  // },
 });
 
 module.exports = Student;

@@ -1,14 +1,22 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const { Student } = require("../../models");
+const sendOTPVerificationEmail = require("../../helpers/sendOTPVerification");
 
 const router = express.Router();
 
 // Register a Student
 router.post("/register/student", async (req, res) => {
   try {
-    const { studentNo, email, surname, initials, contactNo, password, specialization } =
-      req.body;
+    const {
+      studentNo,
+      email,
+      surname,
+      initials,
+      contactNo,
+      password,
+      specialization,
+    } = req.body;
 
     if (!/^\d{9}$/.test(studentNo)) {
       return res
@@ -77,16 +85,21 @@ router.post("/register/student", async (req, res) => {
       contactNo,
       specialization,
       password: hashedPassword,
+      isVerified: false,
     });
 
-    res
-      .status(201)
-      .json({ message: "Student registered successfully", student });
+    const userId = studentNo;
+
+    await sendOTPVerificationEmail(userId, email);
+
+    res.status(201).json({
+      message: "Student registered successfully. Verification OTP sent.",
+      student,
+    });
   } catch (error) {
     console.error("Error registering student:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 module.exports = router;

@@ -4,6 +4,7 @@ const Student = require("./studentModel");
 const Supervisor = require("./supervisorModel");
 const StudentAttendance = require("./studentAttendance");
 const SupervisorAttendance = require("./supervisorAttendance");
+const UserOTPVerification = require("./userOTPVerification");
 
 // Relationships
 //Attendance
@@ -20,4 +21,5 @@ module.exports = {
   Supervisor,
   StudentAttendance,
   SupervisorAttendance,
+  UserOTPVerification,
 };
