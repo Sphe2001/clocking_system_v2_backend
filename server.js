@@ -1,8 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const sequelize = require("./src/helpers/dbConfig");
-const authRoutes = require("./src/routes/auth/authRoutes")
-
+const authRoutes = require("./src/routes/auth/authRoutes");
 
 const app = express();
 
