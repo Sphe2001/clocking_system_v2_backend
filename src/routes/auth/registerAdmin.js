@@ -70,6 +70,7 @@ router.post("/register/admin", async (req, res) => {
       initials,
       password: hashedPassword,
       isVerified: true,
+      isPasswordResetVerified: false,
     });
 
     res.status(201).json({ message: "Admin registered successfully", admin });

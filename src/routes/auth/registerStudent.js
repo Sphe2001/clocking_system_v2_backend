@@ -87,6 +87,7 @@ router.post("/register/student", async (req, res) => {
       specialization,
       password: hashedPassword,
       isVerified: false,
+      isPasswordResetVerified: false,
     });
 
     const userId = studentNo;
@@ -109,14 +110,27 @@ router.post("/verifyotp/student", async (req, res) => {
     const { userId, otp } = req.body;
 
     if (!userId || !otp) {
-      return res.status(400).json({ status: "FAILED", message: "Empty OTP details are not allowed" });
+      return res
+        .status(400)
+        .json({
+          status: "FAILED",
+          message: "Empty OTP details are not allowed",
+        });
     }
 
     // Fetch OTP record
-    const userOTPRecord = await UserOTPVerification.findOne({ where: { userId } });
+    const userOTPRecord = await UserOTPVerification.findOne({
+      where: { userId },
+    });
 
     if (!userOTPRecord) {
-      return res.status(400).json({ status: "FAILED", message: "Account is already verified or does not exist. Please login or register." });
+      return res
+        .status(400)
+        .json({
+          status: "FAILED",
+          message:
+            "Account is already verified or does not exist. Please login or register.",
+        });
     }
 
     const { expiresAt, otp: hashedOTP } = userOTPRecord;
@@ -124,32 +138,45 @@ router.post("/verifyotp/student", async (req, res) => {
     // Check if OTP has expired
     if (expiresAt < Date.now()) {
       await UserOTPVerification.destroy({ where: { userId } });
-      return res.status(400).json({ status: "FAILED", message: "Code has expired. Please request again." });
+      return res
+        .status(400)
+        .json({
+          status: "FAILED",
+          message: "Code has expired. Please request again.",
+        });
     }
 
     // Compare OTP
     const validOTP = await bcrypt.compare(otp, hashedOTP);
 
     if (!validOTP) {
-      return res.status(400).json({ status: "FAILED", message: "Invalid code passed. Check your inbox for the correct code." });
+      return res
+        .status(400)
+        .json({
+          status: "FAILED",
+          message:
+            "Invalid code passed. Check your inbox for the correct code.",
+        });
     }
 
     // Update student verification status
-    await Student.update({ isVerified: true }, { where: { studentNo: userId } });
+    await Student.update(
+      { isVerified: true },
+      { where: { studentNo: userId } }
+    );
 
     // Delete OTP record
     await UserOTPVerification.destroy({ where: { userId } });
 
     res.status(200).json({
       status: "VERIFIED",
-      message: "Student email verified!"
+      message: "Student email verified!",
     });
-
   } catch (error) {
     console.error("Error verifying OTP:", error);
     res.status(500).json({
       status: "FAILED",
-      message: "Internal server error"
+      message: "Internal server error",
     });
   }
 });

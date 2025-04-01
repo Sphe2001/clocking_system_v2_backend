@@ -33,6 +33,10 @@ const Admin = sequelize.define("Admin", {
     type: DataTypes.BOOLEAN,
     default: true,
   },
+  isPasswordResetVerified: {
+    type: DataTypes.BOOLEAN,
+    default: false,
+  },
 });
 
 module.exports = Admin;
