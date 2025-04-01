@@ -1,18 +1,32 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const { Admin, Student, Supervisor } = require("../../models");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv");
+const getUserEmail = require("../../helpers/getUserEmailPassReset");
 
 const router = express.Router();
+router.use(cookieParser());
+dotenv.config();
 
 router.post("/passwordreset", async (req, res) => {
   try {
-    const { email, password, confirmPassword } = req.body;
+    const { password, confirmPassword } = req.body;
+    const email = getUserEmail(req);
 
     // Check if all fields are provided
-    if (!email || !password || !confirmPassword) {
+    if (!password || !confirmPassword) {
       return res.status(400).json({
         status: "FAILED",
-        message: "Please provide email, password, and confirm password.",
+        message: "Please provide password, and confirm password.",
+      });
+    }
+
+    if(!email){
+      return res.status(404).json({
+        status: "FAILED",
+        message: "Token missing, Please send new request",
       });
     }
 
@@ -51,6 +65,13 @@ router.post("/passwordreset", async (req, res) => {
     // Update user password
     await user.update({ password: hashedPassword });
     await user.update({ isPasswordResetVerified: false });
+
+    res.cookie("passwordresettoken", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      expires: new Date(0)
+    });
 
     res.status(200).json({
       status: "SUCCESS",

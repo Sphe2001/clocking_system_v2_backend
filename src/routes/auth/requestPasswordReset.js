@@ -2,8 +2,13 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const { Admin, Student, Supervisor } = require("../../models");
 const sendResetPasswordOTP = require("../../helpers/sendPasswordResetOTP");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv")
 
 const router = express.Router();
+router.use(cookieParser());
+dotenv.config();
 
 router.post("/request/passwordreset", async (req, res) => {
   try {
@@ -29,9 +34,24 @@ router.post("/request/passwordreset", async (req, res) => {
     // send OTP
     sendResetPasswordOTP(email);
 
+    const tokenData = {
+              email: email,
+            };
+        
+            const token = jwt.sign(tokenData, process.env.JWT_SECRET_KEY, {
+              expiresIn: "1h",
+            });
+        
+            res.cookie("passwordresettoken", token, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "Strict",
+              maxAge:  60 * 60 * 1000 ,
+            });
+
     res.status(200).json({
       status: "SUCCESS",
-      message: "OTP send to your email",
+      message: "OTP sent to your email",
     });
   } catch (error) {
     console.error("Error verifying OTP:", error);

@@ -3,8 +3,14 @@ const bcrypt = require("bcryptjs");
 const { Supervisor, Admin } = require("../../models");
 const sendOTPVerificationEmail = require("../../helpers/sendOTPVerification");
 const UserOTPVerification = require("../../models/userOTPVerification");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const getUserId = require("../../helpers/getUserIdSignup");
+const dotenv = require("dotenv")
 
 const router = express.Router();
+router.use(cookieParser());
+dotenv.config();
 
 router.post("/register/supervisor", async (req, res) => {
   try {
@@ -96,6 +102,22 @@ router.post("/register/supervisor", async (req, res) => {
 
     await sendOTPVerificationEmail(userId, email);
 
+    const tokenData = {
+              id: userId,
+              email: email,
+            };
+        
+            const token = jwt.sign(tokenData, process.env.JWT_SECRET_KEY, {
+              expiresIn: "1w",
+            });
+        
+            res.cookie("signuptoken", token, {
+              httpOnly: true,
+              secure: process.env.NODE_ENV === "production",
+              sameSite: "Strict",
+              maxAge: 24 * 60 * 60 * 1000 * 7,
+            });
+
     res.status(201).json({
       message: "Supervisor registered successfully. Verification OTP sent.",
       supervisor,
@@ -109,9 +131,10 @@ router.post("/register/supervisor", async (req, res) => {
 // Verify OTP
 router.post("/verifyotp/supervisor", async (req, res) => {
   try {
-    const { userId, otp } = req.body;
+    const { otp } = req.body;
+    const userId = getUserId(req);
 
-    if (!userId || !otp) {
+    if (!otp) {
       return res
         .status(400)
         .json({
@@ -169,6 +192,13 @@ router.post("/verifyotp/supervisor", async (req, res) => {
 
     // Delete OTP record
     await UserOTPVerification.destroy({ where: { userId } });
+
+    res.cookie("signuptoken", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      expires: new Date(0)
+    });
 
     res.status(200).json({
       status: "VERIFIED",

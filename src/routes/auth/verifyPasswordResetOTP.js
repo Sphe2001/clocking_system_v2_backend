@@ -2,14 +2,21 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const PasswordResetOTP = require("../../models/passwordResetOTP");
 const { Student, Supervisor, Admin } = require("../../models");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const getUserEmail = require("../../helpers/getUserEmailPassReset");
+const dotenv = require("dotenv")
 
 const router = express.Router();
+router.use(cookieParser());
+dotenv.config();
 
 router.post("/verify/password/resetotp", async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { otp } = req.body;
+    const email = getUserEmail(req);
 
-    if (!email || !otp) {
+    if (!otp) {
       return res.status(400).json({
         status: "FAILED",
         message: "Empty OTP details are not allowed",
@@ -30,7 +37,7 @@ router.post("/verify/password/resetotp", async (req, res) => {
     const { expiresAt, otp: hashedOTP } = userOTPRecord;
 
     if (new Date(expiresAt).getTime() < Date.now()) {
-      await PasswordResetOTP.destroy({ where: { userId } });
+      await PasswordResetOTP.destroy({ where: { email } });
       return res.status(400).json({
         status: "FAILED",
         message: "Code has expired. Please request again.",
@@ -60,6 +67,8 @@ router.post("/verify/password/resetotp", async (req, res) => {
     await user.update({ isPasswordResetVerified: true });
 
     await PasswordResetOTP.destroy({ where: { email } });
+
+    
 
     res.status(200).json({
       status: "VERIFIED",

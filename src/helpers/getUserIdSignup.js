@@ -12,7 +12,7 @@ dotenv.config();
 const getUserId = (req, res) => {
     try {
         // Get the token from either the cookies or the Authorization header (Bearer token)
-        const token = req.cookies?.token || req.headers?.authorization?.split(' ')[1] || '';
+        const token = req.cookies?.signuptoken || req.headers?.authorization?.split(' ')[1] || '';
 
         if (!token) {
             throw new Error("No token provided");
